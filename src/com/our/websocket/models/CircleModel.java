@@ -18,7 +18,7 @@ public class CircleModel extends Model{
 	
 	@Override
 	public ArrayList<Vertex> generateRandomeLocations() {
-		//ESPG4326:£¨Lat£¬Long£©=£¨x,y)
+		//ESPG4326:Â£Â¨LatÂ£Â¬LongÂ£Â©=Â£Â¨x,y)
 		ArrayList<Vertex> vertices = new ArrayList<Vertex>();
 		for(int i=0;i < personNum-1;i++) {
 			vertices.add(createP());
@@ -30,7 +30,7 @@ public class CircleModel extends Model{
 	public Vertex createP() {
 		double Lat = center.getLatitude();
 		double Long = center.getLongitude();
-		Vertex vertex = new Vertex(Math.random()*radius+Lat, Math.random()*radius+Long);
+		Vertex vertex = new Vertex(Math.random()*radius+Lat-radius, Math.random()*radius+Long-radius);
 		return vertex;
 	}
 }
