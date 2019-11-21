@@ -1,8 +1,3 @@
-//*************************************************************************************
-// TODO: Retrive the model from iserver
-// TODO: Retrive point data from database
-//*************************************************************************************
-
 // Host address
 var host = "http://support.supermap.com.cn:8090";
 // Url of our model
@@ -14,8 +9,45 @@ var resultLayer;
 // Interval between two updates. By default, 1000 milliseconds
 var fixedTime = 1000;
 
+// For test
+// ********************************************************
+function test(){
+  pathGraph.onEdgeDisabled(function(v1,v2,hotArea){
+    persons.forEach(function(person){
+      var newStart;
+
+      // Strategy One
+      // Only one Exit
+      // Move along current path as long as possible
+      if(person.isInDisabledEdge(hotArea)){
+        newStart = person.loc.distanceTo(v1) < person.loc.distanceTo(v2) ? v1 : v2;
+      }else if(person.isEdgeOnMyWay(v1,v2)){
+        newStart = person.getcloserVertexOnMyWay(v1,v2);
+      }
+
+      if(newStart !== undefined){
+        var newPath = findShortestPath(pathGraph,newStart,pathKeyPoints[0])
+        person.updatePath(newStart, newPath);
+      }
+
+    });
+  });
+
+  persons.forEach(function(person){
+    person.addTo(map);
+  });
+
+  setInterval("movePerson()",200);
+}
+function movePerson() {
+  persons.forEach(function(person){
+    person.move();
+  });
+}
+// ********************************************************
+
 var mapClick = function(e){
-  console.log(e.latlng);
+
 }
 
 // Called at the page's initialization
@@ -30,20 +62,25 @@ function onPageLoad(){
   map.on("click",mapClick);
 
   L.supermap.tiledMapLayer(url).addTo(map);
-  houses.forEach(function(house){
-    var polygon = L.polygon(house.geometry.coordinates,{
-      "color": "#ff0000",
-      "weight": 2,
-      "opacity": 1.0
-    }).addTo(map);
 
-    var points = [];
-    for(var i = 0;i<100;i++){
-      points[i] = randomPointInPoly(polygon);
-    }
+  pathGraph.draw(map);
 
-    loadHeatMap(points);
-  });
+  test();
+
+  // houses.forEach(function(house){
+  //   var polygon = L.polygon(house.geometry.coordinates,{
+  //     "color": "#ff0000",
+  //     "weight": 2,
+  //     "opacity": 1.0
+  //   }).addTo(map);
+  //
+  //   var points = [];
+  //   for(var i = 0;i<100;i++){
+  //     points[i] = randomPointInPoly(polygon);
+  //   }
+  //
+  //   loadHeatMap(points);
+  // });
 }
 
 // Update the heatmap per 1 second
