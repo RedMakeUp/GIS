@@ -80,8 +80,120 @@ class Graph{
     this.AdjList = new Map();
     this.polylines = [];
     this.hotAreas = new Map();
+    this.safeExits = [];
   }
 
+  // *************************** Safe Exit Stuffs *********************************************
+  addSafeExit(v,style = {fillColor: '#0f0',fillOpacity: 0.957,weight: 0,radius: 1000}){
+    this.safeExits.push(L.circle([v.x, v.y],style));
+  }
+
+  getSafeExits(){
+    return this.safeExits;
+  }
+
+  getSafeExit(v){
+    for(var i = 0; i < this.safeExits.length; i++){
+      var loc = this.safeExits[i].getLatLng();
+      if(loc.lat === v.x && loc.lng === v.y) return this.safeExits[i];
+    }
+
+    return undefined;
+  }
+
+  isSafeExit(v){
+    return this.getSafeExit(v) !== undefined ? true: false;
+  }
+
+  setSafeExitStyle(index,style){
+    if(index >= 0 && index < this.safeExits.length){
+      this.safeExits[index].setStyle(style);
+    }
+  }
+
+  setSafeExitPopupContent(index,pupupString){
+    if(index >= 0 && index < this.safeExits.length){
+      this.safeExits[index].setPopupContent(pupupString);
+    }
+  }
+
+  // *************************** Edge Stuffs **************************************************
+  calcPersonNumOfVertex(persons,v,func,disabledStyle = {color: '#e00'}){
+    var pls = pathGraph.getPolylines(v);
+    var num = 0;
+
+    // var that = this;
+    // persons.forEach(function(person){
+    //   var isOfVertex = false;
+    //   for(var i = 0; i < pls.length; i++){
+    //     if(person.isInEdgeHotArea(that.hotAreas.get(pls[i]))){
+    //       isOfVertex = true;
+    //       break;
+    //     }
+    //   }
+    //   if(isOfVertex) num++;
+    // })
+
+    var that = this;
+    for(var i = 0; i < pls.length; i++){
+      num = 0;
+      persons.forEach(function(person){
+        if(person.isInEdgeHotArea(that.hotAreas.get(pls[i]))){
+          num++;
+        }
+      })
+      if(num >= 6){
+        var polyline = pls[i];
+        polyline.setStyle(disabledStyle);
+        var arr = that.getPolylingVertices(polyline);
+        var v1 = arr[0];
+        var v2 = arr[1];
+
+        that.removeEdge(v1,v2);
+        that.removeEdge(v2,v1);
+        func(v1, v2, that.hotAreas.get(polyline));
+      }
+    }
+
+    return num;
+  }
+
+  getPolyline(v1,v2){
+    for(var i = 0; i < this.polylines.length; i++){
+      var polyline = this.polylines[i];
+      var points = polyline._latlngs;
+
+      var point1 = points[0];
+      var point2 = points[1];
+
+      var found = false;
+      if(point1.lat === v1.x && point1.lng === v1.y && point2.lat === v2.x && point2.lng === v2.y){
+        found= true;
+      }else if(point1.lat === v2.x && point1.lng === v2.y && point2.lat === v1.x && point2.lng === v1.y){
+        found = true;
+      }
+
+      if(found){
+        return polyline;
+      }
+    }
+  }
+
+  getPolylines(v){
+    var pls = [];
+
+    var neighbors = this.getNeighbors(v);
+    for(var i = 0; i < neighbors.length; i++){
+      pls.push(this.getPolyline(v,neighbors[i].neighbor));
+    }
+
+    return pls;
+  }
+
+
+
+
+  // *************************** Corner Vertex Stuffs *****************************************
   // Add vertex to the graph
   addVertex(v){
     this.AdjList.set(v,[]);
@@ -157,7 +269,8 @@ class Graph{
     var get_keys = this.AdjList.keys();
     for (var i of get_keys)
     {
-      L.circle([i.x, i.y],circleStyle).bindPopup(i.toString()).addTo(map);
+      if(!this.isSafeExit(i))
+        L.circle([i.x, i.y],circleStyle).bindPopup(i.toString()).addTo(map);
 
       var get_values = this.AdjList.get(i);
 
@@ -184,6 +297,10 @@ class Graph{
       var v1 = arr[0];
       var v2 = arr[1];
       that.hotAreas.set(polyline, createRect(v1,v2));
+    });
+    this.getSafeExits().forEach(function(safeExit){
+      safeExit.addTo(map);
+      safeExit.bindPopup("Circle");
     });
   }
 
@@ -383,7 +500,7 @@ class Person{
     return this.location.y;
   }
 
-  isInDisabledEdge(area){
+  isInEdgeHotArea(area){
     return isMarkerInsidePolygon(this.location,area);
   }
 

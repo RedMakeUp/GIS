@@ -111,6 +111,9 @@ pathGraph.addEdge(pathKeyPoints[21], pathKeyPoints[19]);
 pathGraph.addEdge(pathKeyPoints[21], pathKeyPoints[22]);
 pathGraph.addEdge(pathKeyPoints[22], pathKeyPoints[21]);
 pathGraph.addEdge(pathKeyPoints[22], pathKeyPoints[0]);
+pathGraph.addSafeExit(pathKeyPoints[0]);
+pathGraph.addSafeExit(pathKeyPoints[8]);
+pathGraph.addSafeExit(pathKeyPoints[13]);
 
 
 var persons = [

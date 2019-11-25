@@ -11,31 +11,35 @@ var fixedTime = 1000;
 
 // For test
 // ********************************************************
+var func = function(v1,v2,hotArea){
+  persons.forEach(function(person){
+    var newStart;
+
+    // Strategy One
+    // Only one Exit
+    // Move along current path as long as possible
+    if(person.isInEdgeHotArea(hotArea)){
+      newStart = person.loc.distanceTo(v1) < person.loc.distanceTo(v2) ? v1 : v2;
+    }else if(person.isEdgeOnMyWay(v1,v2)){
+      newStart = person.getcloserVertexOnMyWay(v1,v2);
+    }
+
+    if(newStart !== undefined){
+      var newPath = findShortestPath(pathGraph,newStart,pathKeyPoints[0])
+      person.updatePath(newStart, newPath);
+    }
+  })
+};
+
+
 function test(){
-  pathGraph.onEdgeDisabled(function(v1,v2,hotArea){
-    persons.forEach(function(person){
-      var newStart;
-
-      // Strategy One
-      // Only one Exit
-      // Move along current path as long as possible
-      if(person.isInDisabledEdge(hotArea)){
-        newStart = person.loc.distanceTo(v1) < person.loc.distanceTo(v2) ? v1 : v2;
-      }else if(person.isEdgeOnMyWay(v1,v2)){
-        newStart = person.getcloserVertexOnMyWay(v1,v2);
-      }
-
-      if(newStart !== undefined){
-        var newPath = findShortestPath(pathGraph,newStart,pathKeyPoints[0])
-        person.updatePath(newStart, newPath);
-      }
-
-    });
-  });
+  pathGraph.onEdgeDisabled(func);
 
   persons.forEach(function(person){
     person.addTo(map);
   });
+
+  console.log(pathGraph.calcPersonNumOfVertex(persons,pathKeyPoints[0]));
 
   setInterval("movePerson()",200);
 }
@@ -43,6 +47,9 @@ function movePerson() {
   persons.forEach(function(person){
     person.move();
   });
+
+  pathGraph.setSafeExitStyle(0, {fillColor: generateRandomByString()});
+  pathGraph.setSafeExitPopupContent(0, "" + pathGraph.calcPersonNumOfVertex(persons,pathKeyPoints[0],func));
 }
 // ********************************************************
 

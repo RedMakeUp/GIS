@@ -78,3 +78,13 @@ function isMarkerInsidePolygon(point, poly) {
 
   return inside;
 };
+
+function generateRandomByString(){
+  var color;
+  var r = Math.floor(Math.random() * 255);
+  var g = Math.floor(Math.random() * 255);
+  var b = Math.floor(Math.random() * 255);
+  color= "rgb("+r+" ,"+g+","+ b+")";
+
+  return color;
+}
