@@ -88,3 +88,17 @@ function generateRandomByString(){
 
   return color;
 }
+
+function leafletPoint2LatLng(leafletPoint){
+  return {
+    Lat: leafletPoint.x,
+    Lng: leafletPoint.y
+  };
+}
+
+function createLatLng(lat, lng){
+  return {
+    Lat: lat,
+    Lng: lng
+  };
+}

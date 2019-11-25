@@ -33,13 +33,42 @@ var func = function(v1,v2,hotArea){
 
 
 function test(){
+  var scene = new Scene();
+  scene.addNode(leafletPoint2LatLng(pathKeyPoints[0]));
+  scene.addNode(leafletPoint2LatLng(pathKeyPoints[1]));
+  scene.addNode(leafletPoint2LatLng(pathKeyPoints[2]));
+  scene.addNode(leafletPoint2LatLng(pathKeyPoints[3]));
+
+  console.log(scene.nodes);
+  console.log(scene.getId(createLatLng(39.77,116.26)));
+  console.log(scene.getId(leafletPoint2LatLng(pathKeyPoints[0])));
+  console.log(scene.getId({Lat:0, Lng:1}));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   pathGraph.onEdgeDisabled(func);
 
   persons.forEach(function(person){
     person.addTo(map);
   });
 
-  console.log(pathGraph.calcPersonNumOfVertex(persons,pathKeyPoints[0]));
+  // console.log(pathGraph.calcPersonNumOfVertex(persons,pathKeyPoints[0]));
 
   setInterval("movePerson()",200);
 }
