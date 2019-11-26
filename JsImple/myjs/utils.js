@@ -90,15 +90,21 @@ function generateRandomByString(){
 }
 
 function leafletPoint2LatLng(leafletPoint){
-  return {
-    Lat: leafletPoint.x,
-    Lng: leafletPoint.y
-  };
+  return new LatLng(leafletPoint.x,leafletPoint.y);
+}
+
+function LatLng2leafletPoint(v){
+  return L.point(v.Lat, v.Lng);
+}
+
+function LatLng2Array(v){
+  return [v.Lat, v.Lng];
 }
 
 function createLatLng(lat, lng){
-  return {
-    Lat: lat,
-    Lng: lng
-  };
+  return new LatLng(lat,lng);
+}
+
+function calcDistance(v1,v2){
+  return LatLng2leafletPoint(v1).distanceTo(LatLng2leafletPoint(v2));
 }

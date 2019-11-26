@@ -72,357 +72,6 @@ class PriorityQueue {
 }
 
 // *********************************************************************
-// Define: Undirected weighted map
-// *********************************************************************
-class Graph{
-  constructor(noOfVertices){
-    this.noOfVertices = noOfVertices;
-    this.AdjList = new Map();
-    this.polylines = [];
-    this.hotAreas = new Map();
-    this.safeExits = [];
-  }
-
-  // *************************** Safe Exit Stuffs *********************************************
-  addSafeExit(v,style = {fillColor: '#0f0',fillOpacity: 0.957,weight: 0,radius: 1000}){
-    this.safeExits.push(L.circle([v.x, v.y],style));
-  }
-
-  getSafeExits(){
-    return this.safeExits;
-  }
-
-  getSafeExit(v){
-    for(var i = 0; i < this.safeExits.length; i++){
-      var loc = this.safeExits[i].getLatLng();
-      if(loc.lat === v.x && loc.lng === v.y) return this.safeExits[i];
-    }
-
-    return undefined;
-  }
-
-  isSafeExit(v){
-    return this.getSafeExit(v) !== undefined ? true: false;
-  }
-
-  setSafeExitStyle(index,style){
-    if(index >= 0 && index < this.safeExits.length){
-      this.safeExits[index].setStyle(style);
-    }
-  }
-
-  setSafeExitPopupContent(index,pupupString){
-    if(index >= 0 && index < this.safeExits.length){
-      this.safeExits[index].setPopupContent(pupupString);
-    }
-  }
-
-  // *************************** Edge Stuffs **************************************************
-  calcPersonNumOfVertex(persons,v,func,disabledStyle = {color: '#e00'}){
-    var pls = pathGraph.getPolylines(v);
-    var num = 0;
-
-    // var that = this;
-    // persons.forEach(function(person){
-    //   var isOfVertex = false;
-    //   for(var i = 0; i < pls.length; i++){
-    //     if(person.isInEdgeHotArea(that.hotAreas.get(pls[i]))){
-    //       isOfVertex = true;
-    //       break;
-    //     }
-    //   }
-    //   if(isOfVertex) num++;
-    // })
-
-    var that = this;
-    for(var i = 0; i < pls.length; i++){
-      num = 0;
-      persons.forEach(function(person){
-        if(person.isInEdgeHotArea(that.hotAreas.get(pls[i]))){
-          num++;
-        }
-      })
-      if(num >= 6){
-        var polyline = pls[i];
-        polyline.setStyle(disabledStyle);
-        var arr = that.getPolylingVertices(polyline);
-        var v1 = arr[0];
-        var v2 = arr[1];
-
-        that.removeEdge(v1,v2);
-        that.removeEdge(v2,v1);
-        func(v1, v2, that.hotAreas.get(polyline));
-      }
-    }
-
-    return num;
-  }
-
-  getPolyline(v1,v2){
-    for(var i = 0; i < this.polylines.length; i++){
-      var polyline = this.polylines[i];
-      var points = polyline._latlngs;
-
-      var point1 = points[0];
-      var point2 = points[1];
-
-      var found = false;
-      if(point1.lat === v1.x && point1.lng === v1.y && point2.lat === v2.x && point2.lng === v2.y){
-        found= true;
-      }else if(point1.lat === v2.x && point1.lng === v2.y && point2.lat === v1.x && point2.lng === v1.y){
-        found = true;
-      }
-
-      if(found){
-        return polyline;
-      }
-    }
-  }
-
-  getPolylines(v){
-    var pls = [];
-
-    var neighbors = this.getNeighbors(v);
-    for(var i = 0; i < neighbors.length; i++){
-      pls.push(this.getPolyline(v,neighbors[i].neighbor));
-    }
-
-    return pls;
-  }
-
-
-
-
-  // *************************** Corner Vertex Stuffs *****************************************
-  // Add vertex to the graph
-  addVertex(v){
-    this.AdjList.set(v,[]);
-  }
-
-  // Add edge to the graph with a weight(By default, 0)
-  addEdge(v1,v2){
-    var distance = v1.distanceTo(v2);
-    this.AdjList.get(v1).push({neighbor: v2, weight: distance});
-  }
-
-  // WARNING!!!
-  // Not care about removing weights
-  removeEdge(v1,v2){
-    var toBeRemoved = null;
-    var neighbors = this.getNeighbors(v1);
-    if(neighbors === undefined){
-      console.log("Not find neighbors of " + v1);
-      return;
-    }
-
-    for(var i of neighbors){
-      if(i.neighbor === v2){
-        toBeRemoved = i;
-        break;
-      }
-    }
-
-    if(toBeRemoved !== null){
-      var index = neighbors.indexOf(toBeRemoved);
-      if (index > -1) {
-        console.log("Remove Edge: From " + v1 + " to " + toBeRemoved.neighbor);
-        neighbors.splice(index, 1);
-      }else{
-        console.log("Remove: Can not find the point" + toBeRemoved.neighbor);
-      }
-    }
-  }
-
-  getNeighbors(v){
-    return this.AdjList.get(v);
-  }
-
-  getVertices(){
-    return Array.from( this.AdjList.keys());
-  }
-
-  // update the weight between two vertices
-  updateWeight(v1,v2,w){
-    for (var neighborPair of this.AdjList.get(v1)){
-      if(neighborPair.neighbor === v2){
-        neighborPair.weight = w;
-        break;
-      }
-    }
-  }
-
-  // Get the weight of two vertex.If they aren't linked, return -1
-  getWeight(v1,v2){
-    var w = -1;
-    for (var neighborPair of this.AdjList.get(v1)){
-      if(neighborPair.neighbor === v2){
-        w = neighborPair.weight;
-        break;
-      }
-    }
-
-    return w;
-  }
-
-  draw(map, lineStyle = {color: '#555'}, circleStyle = {color: '#f03',fillColor: '#f03',fillOpacity: 0.5,weight: 0,radius: 500}){
-    var isDrawed = new Map();
-    var get_keys = this.AdjList.keys();
-    for (var i of get_keys)
-    {
-      if(!this.isSafeExit(i))
-        L.circle([i.x, i.y],circleStyle).bindPopup(i.toString()).addTo(map);
-
-      var get_values = this.AdjList.get(i);
-
-      for (var j of get_values){
-        if(isDrawed[[i, j.neighbor]] === true
-         || isDrawed[[j.neighbor,i]] === true) continue;
-
-        var points = [
-          [i.x, i.y],
-          [j.neighbor.x, j.neighbor.y]
-        ];
-
-        this.polylines[this.polylines.length] = L.polyline(points,lineStyle);
-
-        isDrawed[[i, j.neighbor]] = true;
-      }
-    }
-
-    var that = this;
-    this.polylines.forEach(function(polyline){
-      polyline.addTo(map);
-
-      var arr = that.getPolylingVertices(polyline);
-      var v1 = arr[0];
-      var v2 = arr[1];
-      that.hotAreas.set(polyline, createRect(v1,v2));
-    });
-    this.getSafeExits().forEach(function(safeExit){
-      safeExit.addTo(map);
-      safeExit.bindPopup("Circle");
-    });
-  }
-
-  getPolylingVertices(polyline){
-    var v_1 = polyline.getLatLngs()[0];
-    var v_2 = polyline.getLatLngs()[1];
-
-    var v1;
-    var v2;
-    var get_keys = this.AdjList.keys();
-    for(var i of get_keys){
-      if(i.x === v_1.lat && i.y === v_1.lng){
-        v1 = i;
-      }else if (i.x === v_2.lat && i.y === v_2.lng) {
-        v2 = i;
-      }
-    }
-
-    return [v1,v2];
-  }
-
-  onEdgeDisabled(func,disabledStyle = {color: '#e00'} ){
-    var that = this;
-    this.polylines.forEach(function(polyline){
-      polyline.on("click",function(){
-        polyline.setStyle(disabledStyle);
-        var arr = that.getPolylingVertices(polyline);
-        var v1 = arr[0];
-        var v2 = arr[1];
-
-        that.removeEdge(v1,v2);
-        that.removeEdge(v2,v1);
-        func(v1, v2, that.hotAreas.get(polyline));
-      });
-    });
-  }
-
-  // Return whether the vertex is in the graph
-  contain(v){
-    return this.AdjList.get(v) ? true:false;
-  }
-
-  // Return an array of all vertices(lat,lng)
-  getVerticesByArray(){
-    var vertices = [];
-    var get_keys = this.AdjList.keys();
-
-    for (var i of get_keys){
-      vertices[vertices.length] = [i.latitude,i.longitude];
-    }
-
-    return vertices;
-  }
-
-  // Prints the vertex and adjacency list
-  printGraph()
-  {
-      // get all the vertices
-      var get_keys = this.AdjList.keys();
-      // iterate over the vertices
-      for (var i of get_keys)
-      {
-          // great the corresponding adjacency list for the vertex
-          var get_values = this.AdjList.get(i);
-          var conc = "";
-          // iterate over the adjacency list
-          // concatenate the values into a string
-          for (var j of get_values)
-              conc += "[" + j.neighbor.toString() + ", " + j.weight + "] ";
-          // print the vertex and its adjacency list
-          console.log(i.toString() + " -> " + conc);
-      }
-  }
-}
-
-// *********************************************************************
-// Find the shortest path from start vertex to goal vertex in graph.
-// If the path exists, return the array of vertices in the path; Otherwise,
-// return an empty array.
-// *********************************************************************
-function findShortestPath(graph, start, goal){
-  var frontier = new PriorityQueue((a, b) => a[1] < b[1]);
-  var came_from = new Map();
-  var cost_so_far = new Map();
-  var current = null;
-  var new_cost = 0;
-  came_from[start] = null;
-  cost_so_far[start] = 0;
-  frontier.push([start,0]);
-
-  while(!frontier.isEmpty()){
-    current = frontier.pop()[0];
-
-    if(current === goal) break;
-
-    for(var next of graph.getNeighbors(current)){
-      var nextPoint = next.neighbor;
-      new_cost = cost_so_far[current] + graph.getWeight(current,nextPoint);
-      if(cost_so_far[nextPoint] == null || new_cost < cost_so_far[nextPoint]){
-        cost_so_far[nextPoint] = new_cost;
-        frontier.push([nextPoint,new_cost]);
-        came_from[nextPoint] = current;
-      }
-    }
-  }
-
-  var path = [];
-
-  if(came_from[goal] !== null && came_from[goal] !== undefined){
-    current = goal;
-    while(current !== null && current !== undefined){
-      path.push(current);
-      current = came_from[current];
-    }
-  }
-
-  path.reverse();
-
-  return path;
-}
-
-// *********************************************************************
 // Define: Person
 // *********************************************************************
 var PERSON_MOVE_TORANCE = 0.005;
@@ -434,6 +83,8 @@ class Person{
     this.path = [];
     this.presentation = L.marker([location.x,location.y],style);
     this.presentation.bindPopup(location.toString());
+    this.lastTarget = null;
+    this.currentExit = 0;
   }
 
   addTo(map){
@@ -468,6 +119,7 @@ class Person{
 
   setPath(path){
     this.path = path;
+    this.lastTarget = path[0];
   }
 
   updatePath(relayPoint, newPath){
@@ -519,9 +171,20 @@ class Person{
     return target;
   }
 
+  // TODO
+  redirect(scene){
+    var allExits = scene.getExitIds();
+
+    for(var i = 0; i < allExits.length; i++){
+      if(allExits[i] !== this.currentExit){
+
+      }
+    }
+  }
+
   // Update person location, say, per second
   // Use elementInUI to show state of the person in ui
-  move(){
+  move(scene){
     if(this.path.length === 0) return;
 
     var target = this.path[0];
@@ -533,6 +196,11 @@ class Person{
     this.location.y += (dir.y * PERSON_MOVE_SPEED);
 
     if(target.distanceTo(this.location) < PERSON_MOVE_TORANCE){
+      if(this.path.length >= 2){
+        scene.exitEdge(scene.getId(leafletPoint2LatLng(this.lastTarget)),scene.getId(leafletPoint2LatLng(target)));
+        scene.enterEdge(scene.getId(leafletPoint2LatLng(target)),scene.getId(leafletPoint2LatLng(this.path[1])));
+        this.lastTarget = target;
+      }
       this.path.shift();
     }
 

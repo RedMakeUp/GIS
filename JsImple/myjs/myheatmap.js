@@ -33,37 +33,10 @@ var func = function(v1,v2,hotArea){
 
 
 function test(){
-  var scene = new Scene();
-  scene.addNode(leafletPoint2LatLng(pathKeyPoints[0]));
-  scene.addNode(leafletPoint2LatLng(pathKeyPoints[1]));
-  scene.addNode(leafletPoint2LatLng(pathKeyPoints[2]));
-  scene.addNode(leafletPoint2LatLng(pathKeyPoints[3]));
-
-  console.log(scene.nodes);
-  console.log(scene.getId(createLatLng(39.77,116.26)));
-  console.log(scene.getId(leafletPoint2LatLng(pathKeyPoints[0])));
-  console.log(scene.getId({Lat:0, Lng:1}));
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  pathGraph.onEdgeDisabled(func);
-
+  // pathGraph.onEdgeDisabled(func);
+  //
   persons.forEach(function(person){
     person.addTo(map);
   });
@@ -74,11 +47,11 @@ function test(){
 }
 function movePerson() {
   persons.forEach(function(person){
-    person.move();
+    person.move(scene);
   });
-
-  pathGraph.setSafeExitStyle(0, {fillColor: generateRandomByString()});
-  pathGraph.setSafeExitPopupContent(0, "" + pathGraph.calcPersonNumOfVertex(persons,pathKeyPoints[0],func));
+  //
+  // pathGraph.setSafeExitStyle(0, {fillColor: generateRandomByString()});
+  // pathGraph.setSafeExitPopupContent(0, "" + pathGraph.calcPersonNumOfVertex(persons,pathKeyPoints[0],func));
 }
 // ********************************************************
 
@@ -90,6 +63,7 @@ var mapClick = function(e){
 function onPageLoad(){
   map = L.map('mymap',{
     preferCanvas: true,
+    //crs: L.CRS.EPSG3857,
     center: [39.89, 116.35],
     maxZoom: 18,
     zoom: 11
@@ -99,24 +73,11 @@ function onPageLoad(){
 
   L.supermap.tiledMapLayer(url).addTo(map);
 
-  pathGraph.draw(map);
+  scene.draw(map);
+  scene.addClickOnNode();
+  scene.addClickOnEdge();
 
   test();
-
-  // houses.forEach(function(house){
-  //   var polygon = L.polygon(house.geometry.coordinates,{
-  //     "color": "#ff0000",
-  //     "weight": 2,
-  //     "opacity": 1.0
-  //   }).addTo(map);
-  //
-  //   var points = [];
-  //   for(var i = 0;i<100;i++){
-  //     points[i] = randomPointInPoly(polygon);
-  //   }
-  //
-  //   loadHeatMap(points);
-  // });
 }
 
 // Update the heatmap per 1 second

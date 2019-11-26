@@ -22,98 +22,101 @@ var houses = [{
 }];
 
 var pathKeyPoints = [
-  L.point(39.85,116.13),// 0
-  L.point(39.76,116.14),// 1
-  L.point(39.83,116.23),// 2
-  L.point(39.77,116.26),// 3
-  L.point(39.85,116.30),// 4
-  L.point(39.82,116.33),// 5
-  L.point(39.85,116.36),// 6
-  L.point(39.79,116.38),// 7
-  L.point(39.81,116.42),// 8
-  L.point(39.85,116.48),// 9
-  L.point(39.80,116.61),// 10
-  L.point(40.02,116.61),// 11
-  L.point(40.05,116.55),// 12
-  L.point(39.98,116.46),// 13
-  L.point(39.94,116.39),// 14
-  L.point(39.98,116.35),// 15
-  L.point(39.94,116.33),// 16
-  L.point(39.88,116.32),// 17
-  L.point(39.92,116.27),// 18
-  L.point(39.99,116.25),// 19
-  L.point(39.85,116.20),// 20
-  L.point(39.91,116.20),// 21
-  L.point(39.93,116.13)// 22
+  createLatLng(39.85,116.13),// 0
+  createLatLng(39.76,116.14),// 1
+  createLatLng(39.83,116.23),// 2
+  createLatLng(39.77,116.26),// 3
+  createLatLng(39.85,116.30),// 4
+  createLatLng(39.82,116.33),// 5
+  createLatLng(39.85,116.36),// 6
+  createLatLng(39.79,116.38),// 7
+  createLatLng(39.81,116.42),// 8
+  createLatLng(39.85,116.48),// 9
+  createLatLng(39.80,116.61),// 10
+  createLatLng(40.02,116.61),// 11
+  createLatLng(40.05,116.55),// 12
+  createLatLng(39.98,116.46),// 13
+  createLatLng(39.94,116.39),// 14
+  createLatLng(39.98,116.35),// 15
+  createLatLng(39.94,116.33),// 16
+  createLatLng(39.88,116.32),// 17
+  createLatLng(39.92,116.27),// 18
+  createLatLng(39.99,116.25),// 19
+  createLatLng(39.85,116.20),// 20
+  createLatLng(39.91,116.20),// 21
+  createLatLng(39.93,116.13)// 22
 ];
 
-var pathGraph = new Graph(pathKeyPoints.length);
-window.pathGraph = pathGraph;
+// Add nodes
+var scene = new Scene();
 for(var i = 0; i < pathKeyPoints.length;i++){
-  pathGraph.addVertex(pathKeyPoints[i]);
+  scene.addNode(pathKeyPoints[i]);
 }
+scene.addExit(scene.getId(pathKeyPoints[0]));
+scene.addExit(scene.getId(pathKeyPoints[13]));
+scene.addExit(scene.getId(pathKeyPoints[7]));
 
-pathGraph.addEdge(pathKeyPoints[0], pathKeyPoints[1]);
-pathGraph.addEdge(pathKeyPoints[0], pathKeyPoints[20]);
-pathGraph.addEdge(pathKeyPoints[0], pathKeyPoints[22]);
-pathGraph.addEdge(pathKeyPoints[1], pathKeyPoints[0]);
-pathGraph.addEdge(pathKeyPoints[1], pathKeyPoints[3]);
-pathGraph.addEdge(pathKeyPoints[2], pathKeyPoints[20]);
-pathGraph.addEdge(pathKeyPoints[2], pathKeyPoints[3]);
-pathGraph.addEdge(pathKeyPoints[2], pathKeyPoints[4]);
-pathGraph.addEdge(pathKeyPoints[2], pathKeyPoints[18]);
-pathGraph.addEdge(pathKeyPoints[3], pathKeyPoints[1]);
-pathGraph.addEdge(pathKeyPoints[3], pathKeyPoints[2]);
-pathGraph.addEdge(pathKeyPoints[3], pathKeyPoints[7]);
-pathGraph.addEdge(pathKeyPoints[4], pathKeyPoints[2]);
-pathGraph.addEdge(pathKeyPoints[4], pathKeyPoints[5]);
-pathGraph.addEdge(pathKeyPoints[4], pathKeyPoints[17]);
-pathGraph.addEdge(pathKeyPoints[5], pathKeyPoints[4]);
-pathGraph.addEdge(pathKeyPoints[5], pathKeyPoints[6]);
-pathGraph.addEdge(pathKeyPoints[6], pathKeyPoints[5]);
-pathGraph.addEdge(pathKeyPoints[6], pathKeyPoints[17]);
-pathGraph.addEdge(pathKeyPoints[6], pathKeyPoints[9]);
-pathGraph.addEdge(pathKeyPoints[6], pathKeyPoints[8]);
-pathGraph.addEdge(pathKeyPoints[7], pathKeyPoints[3]);
-pathGraph.addEdge(pathKeyPoints[7], pathKeyPoints[8]);
-pathGraph.addEdge(pathKeyPoints[8], pathKeyPoints[7]);
-pathGraph.addEdge(pathKeyPoints[8], pathKeyPoints[6]);
-pathGraph.addEdge(pathKeyPoints[8], pathKeyPoints[10]);
-pathGraph.addEdge(pathKeyPoints[9], pathKeyPoints[6]);
-pathGraph.addEdge(pathKeyPoints[9], pathKeyPoints[10]);
-pathGraph.addEdge(pathKeyPoints[9], pathKeyPoints[13]);
-pathGraph.addEdge(pathKeyPoints[10], pathKeyPoints[8]);
-pathGraph.addEdge(pathKeyPoints[10], pathKeyPoints[9]);
-pathGraph.addEdge(pathKeyPoints[10], pathKeyPoints[11]);
-pathGraph.addEdge(pathKeyPoints[11], pathKeyPoints[10]);
-pathGraph.addEdge(pathKeyPoints[11], pathKeyPoints[12]);
-pathGraph.addEdge(pathKeyPoints[12], pathKeyPoints[11]);
-pathGraph.addEdge(pathKeyPoints[12], pathKeyPoints[13]);
-pathGraph.addEdge(pathKeyPoints[13], pathKeyPoints[9]);
-pathGraph.addEdge(pathKeyPoints[13], pathKeyPoints[12]);
-pathGraph.addEdge(pathKeyPoints[13], pathKeyPoints[14]);
-pathGraph.addEdge(pathKeyPoints[14], pathKeyPoints[13]);
-pathGraph.addEdge(pathKeyPoints[14], pathKeyPoints[15]);
-pathGraph.addEdge(pathKeyPoints[14], pathKeyPoints[16]);
-pathGraph.addEdge(pathKeyPoints[15], pathKeyPoints[19]);
-pathGraph.addEdge(pathKeyPoints[15], pathKeyPoints[14]);
-pathGraph.addEdge(pathKeyPoints[16], pathKeyPoints[14]);
-pathGraph.addEdge(pathKeyPoints[16], pathKeyPoints[18]);
-pathGraph.addEdge(pathKeyPoints[17], pathKeyPoints[4]);
-pathGraph.addEdge(pathKeyPoints[17], pathKeyPoints[6]);
-pathGraph.addEdge(pathKeyPoints[18], pathKeyPoints[16]);
-pathGraph.addEdge(pathKeyPoints[18], pathKeyPoints[2]);
-pathGraph.addEdge(pathKeyPoints[19], pathKeyPoints[15]);
-pathGraph.addEdge(pathKeyPoints[19], pathKeyPoints[21]);
-pathGraph.addEdge(pathKeyPoints[20], pathKeyPoints[2]);
-pathGraph.addEdge(pathKeyPoints[20], pathKeyPoints[0]);
-pathGraph.addEdge(pathKeyPoints[21], pathKeyPoints[19]);
-pathGraph.addEdge(pathKeyPoints[21], pathKeyPoints[22]);
-pathGraph.addEdge(pathKeyPoints[22], pathKeyPoints[21]);
-pathGraph.addEdge(pathKeyPoints[22], pathKeyPoints[0]);
-pathGraph.addSafeExit(pathKeyPoints[0]);
-pathGraph.addSafeExit(pathKeyPoints[8]);
-pathGraph.addSafeExit(pathKeyPoints[13]);
+// Add edges
+scene.addEdge(scene.getId(pathKeyPoints[0]), scene.getId(pathKeyPoints[1]));
+scene.addEdge(scene.getId(pathKeyPoints[0]), scene.getId(pathKeyPoints[20]));
+scene.addEdge(scene.getId(pathKeyPoints[0]), scene.getId(pathKeyPoints[22]));
+scene.addEdge(scene.getId(pathKeyPoints[1]), scene.getId(pathKeyPoints[0]));
+scene.addEdge(scene.getId(pathKeyPoints[1]), scene.getId(pathKeyPoints[3]));
+scene.addEdge(scene.getId(pathKeyPoints[2]), scene.getId(pathKeyPoints[20]));
+scene.addEdge(scene.getId(pathKeyPoints[2]), scene.getId(pathKeyPoints[3]));
+scene.addEdge(scene.getId(pathKeyPoints[2]), scene.getId(pathKeyPoints[4]));
+scene.addEdge(scene.getId(pathKeyPoints[2]), scene.getId(pathKeyPoints[18]));
+scene.addEdge(scene.getId(pathKeyPoints[3]), scene.getId(pathKeyPoints[1]));
+scene.addEdge(scene.getId(pathKeyPoints[3]), scene.getId(pathKeyPoints[2]));
+scene.addEdge(scene.getId(pathKeyPoints[3]), scene.getId(pathKeyPoints[7]));
+scene.addEdge(scene.getId(pathKeyPoints[4]), scene.getId(pathKeyPoints[2]));
+scene.addEdge(scene.getId(pathKeyPoints[4]), scene.getId(pathKeyPoints[5]));
+scene.addEdge(scene.getId(pathKeyPoints[4]), scene.getId(pathKeyPoints[17]));
+scene.addEdge(scene.getId(pathKeyPoints[5]), scene.getId(pathKeyPoints[4]));
+scene.addEdge(scene.getId(pathKeyPoints[5]), scene.getId(pathKeyPoints[6]));
+scene.addEdge(scene.getId(pathKeyPoints[6]), scene.getId(pathKeyPoints[5]));
+scene.addEdge(scene.getId(pathKeyPoints[6]), scene.getId(pathKeyPoints[17]));
+scene.addEdge(scene.getId(pathKeyPoints[6]), scene.getId(pathKeyPoints[9]));
+scene.addEdge(scene.getId(pathKeyPoints[6]), scene.getId(pathKeyPoints[8]));
+scene.addEdge(scene.getId(pathKeyPoints[7]), scene.getId(pathKeyPoints[3]));
+scene.addEdge(scene.getId(pathKeyPoints[7]), scene.getId(pathKeyPoints[8]));
+scene.addEdge(scene.getId(pathKeyPoints[8]), scene.getId(pathKeyPoints[7]));
+scene.addEdge(scene.getId(pathKeyPoints[8]), scene.getId(pathKeyPoints[6]));
+scene.addEdge(scene.getId(pathKeyPoints[8]), scene.getId(pathKeyPoints[10]));
+scene.addEdge(scene.getId(pathKeyPoints[9]), scene.getId(pathKeyPoints[6]));
+scene.addEdge(scene.getId(pathKeyPoints[9]), scene.getId(pathKeyPoints[10]));
+scene.addEdge(scene.getId(pathKeyPoints[9]), scene.getId(pathKeyPoints[13]));
+scene.addEdge(scene.getId(pathKeyPoints[10]), scene.getId(pathKeyPoints[8]));
+scene.addEdge(scene.getId(pathKeyPoints[10]), scene.getId(pathKeyPoints[9]));
+scene.addEdge(scene.getId(pathKeyPoints[10]), scene.getId(pathKeyPoints[11]));
+scene.addEdge(scene.getId(pathKeyPoints[11]), scene.getId(pathKeyPoints[10]));
+scene.addEdge(scene.getId(pathKeyPoints[11]), scene.getId(pathKeyPoints[12]));
+scene.addEdge(scene.getId(pathKeyPoints[12]), scene.getId(pathKeyPoints[11]));
+scene.addEdge(scene.getId(pathKeyPoints[12]), scene.getId(pathKeyPoints[13]));
+scene.addEdge(scene.getId(pathKeyPoints[13]), scene.getId(pathKeyPoints[9]));
+scene.addEdge(scene.getId(pathKeyPoints[13]), scene.getId(pathKeyPoints[12]));
+scene.addEdge(scene.getId(pathKeyPoints[13]), scene.getId(pathKeyPoints[14]));
+scene.addEdge(scene.getId(pathKeyPoints[14]), scene.getId(pathKeyPoints[13]));
+scene.addEdge(scene.getId(pathKeyPoints[14]), scene.getId(pathKeyPoints[15]));
+scene.addEdge(scene.getId(pathKeyPoints[14]), scene.getId(pathKeyPoints[16]));
+scene.addEdge(scene.getId(pathKeyPoints[15]), scene.getId(pathKeyPoints[19]));
+scene.addEdge(scene.getId(pathKeyPoints[15]), scene.getId(pathKeyPoints[14]));
+scene.addEdge(scene.getId(pathKeyPoints[16]), scene.getId(pathKeyPoints[14]));
+scene.addEdge(scene.getId(pathKeyPoints[16]), scene.getId(pathKeyPoints[18]));
+scene.addEdge(scene.getId(pathKeyPoints[17]), scene.getId(pathKeyPoints[4]));
+scene.addEdge(scene.getId(pathKeyPoints[17]), scene.getId(pathKeyPoints[6]));
+scene.addEdge(scene.getId(pathKeyPoints[18]), scene.getId(pathKeyPoints[16]));
+scene.addEdge(scene.getId(pathKeyPoints[18]), scene.getId(pathKeyPoints[2]));
+scene.addEdge(scene.getId(pathKeyPoints[19]), scene.getId(pathKeyPoints[15]));
+scene.addEdge(scene.getId(pathKeyPoints[19]), scene.getId(pathKeyPoints[21]));
+scene.addEdge(scene.getId(pathKeyPoints[20]), scene.getId(pathKeyPoints[2]));
+scene.addEdge(scene.getId(pathKeyPoints[20]), scene.getId(pathKeyPoints[0]));
+scene.addEdge(scene.getId(pathKeyPoints[21]), scene.getId(pathKeyPoints[19]));
+scene.addEdge(scene.getId(pathKeyPoints[21]), scene.getId(pathKeyPoints[22]));
+scene.addEdge(scene.getId(pathKeyPoints[22]), scene.getId(pathKeyPoints[21]));
+scene.addEdge(scene.getId(pathKeyPoints[22]), scene.getId(pathKeyPoints[0]));
+
+
 
 
 var persons = [
@@ -166,45 +169,45 @@ var persons = [
   new Person(L.point(39.79175,116.38254)),//7.3
 ];
 
-persons[0].setPath(findShortestPath(pathGraph,pathKeyPoints[11],pathKeyPoints[0]));
-persons[1].setPath(findShortestPath(pathGraph,pathKeyPoints[13],pathKeyPoints[0]));
-persons[2].setPath(findShortestPath(pathGraph,pathKeyPoints[14],pathKeyPoints[0]));
-persons[3].setPath(findShortestPath(pathGraph,pathKeyPoints[16],pathKeyPoints[0]));
-persons[4].setPath(findShortestPath(pathGraph,pathKeyPoints[18],pathKeyPoints[0]));
-persons[5].setPath(findShortestPath(pathGraph,pathKeyPoints[15],pathKeyPoints[0]));
-persons[6].setPath(findShortestPath(pathGraph,pathKeyPoints[19],pathKeyPoints[0]));
-persons[7].setPath(findShortestPath(pathGraph,pathKeyPoints[21],pathKeyPoints[0]));
-persons[8].setPath(findShortestPath(pathGraph,pathKeyPoints[9],pathKeyPoints[0]));
-persons[9].setPath(findShortestPath(pathGraph,pathKeyPoints[6],pathKeyPoints[0]));
-persons[10].setPath(findShortestPath(pathGraph,pathKeyPoints[4],pathKeyPoints[0]));
-persons[11].setPath(findShortestPath(pathGraph,pathKeyPoints[2],pathKeyPoints[0]));
-persons[12].setPath(findShortestPath(pathGraph,pathKeyPoints[10],pathKeyPoints[0]));
-persons[13].setPath(findShortestPath(pathGraph,pathKeyPoints[8],pathKeyPoints[0]));
-persons[14].setPath(findShortestPath(pathGraph,pathKeyPoints[7],pathKeyPoints[0]));
-persons[15].setPath(findShortestPath(pathGraph,pathKeyPoints[3],pathKeyPoints[0]));
-
-persons[16].setPath(findShortestPath(pathGraph,pathKeyPoints[4],pathKeyPoints[0]));
-persons[17].setPath(findShortestPath(pathGraph,pathKeyPoints[6],pathKeyPoints[0]));
-persons[18].setPath(findShortestPath(pathGraph,pathKeyPoints[6],pathKeyPoints[0]));
-
-persons[19].setPath(findShortestPath(pathGraph,pathKeyPoints[16],pathKeyPoints[0]));
-persons[20].setPath(findShortestPath(pathGraph,pathKeyPoints[16],pathKeyPoints[0]));
-persons[21].setPath(findShortestPath(pathGraph,pathKeyPoints[16],pathKeyPoints[0]));
-
-persons[22].setPath(findShortestPath(pathGraph,pathKeyPoints[15],pathKeyPoints[0]));
-persons[23].setPath(findShortestPath(pathGraph,pathKeyPoints[15],pathKeyPoints[0]));
-persons[24].setPath(findShortestPath(pathGraph,pathKeyPoints[15],pathKeyPoints[0]));
-
-persons[25].setPath(findShortestPath(pathGraph,pathKeyPoints[13],pathKeyPoints[0]));
-persons[26].setPath(findShortestPath(pathGraph,pathKeyPoints[13],pathKeyPoints[0]));
-persons[27].setPath(findShortestPath(pathGraph,pathKeyPoints[13],pathKeyPoints[0]));
-
-persons[28].setPath(findShortestPath(pathGraph,pathKeyPoints[9],pathKeyPoints[0]));
-persons[29].setPath(findShortestPath(pathGraph,pathKeyPoints[9],pathKeyPoints[0]));
-persons[30].setPath(findShortestPath(pathGraph,pathKeyPoints[10],pathKeyPoints[0]));
-persons[31].setPath(findShortestPath(pathGraph,pathKeyPoints[10],pathKeyPoints[0]));
-persons[32].setPath(findShortestPath(pathGraph,pathKeyPoints[10],pathKeyPoints[0]));
-
-persons[33].setPath(findShortestPath(pathGraph,pathKeyPoints[7],pathKeyPoints[0]));
-persons[34].setPath(findShortestPath(pathGraph,pathKeyPoints[7],pathKeyPoints[0]));
-persons[35].setPath(findShortestPath(pathGraph,pathKeyPoints[7],pathKeyPoints[0]));
+persons[0].setPath(scene.findPath(scene.getId(pathKeyPoints[11]),scene.getId(pathKeyPoints[0])));
+persons[1].setPath(scene.findPath(scene.getId(pathKeyPoints[13]),scene.getId(pathKeyPoints[0])));
+persons[2].setPath(scene.findPath(scene.getId(pathKeyPoints[14]),scene.getId(pathKeyPoints[0])));
+persons[3].setPath(scene.findPath(scene.getId(pathKeyPoints[16]),scene.getId(pathKeyPoints[0])));
+persons[4].setPath(scene.findPath(scene.getId(pathKeyPoints[18]),scene.getId(pathKeyPoints[0])));
+persons[5].setPath(scene.findPath(scene.getId(pathKeyPoints[15]),scene.getId(pathKeyPoints[0])));
+persons[6].setPath(scene.findPath(scene.getId(pathKeyPoints[19]),scene.getId(pathKeyPoints[0])));
+persons[7].setPath(scene.findPath(scene.getId(pathKeyPoints[21]),scene.getId(pathKeyPoints[0])));
+persons[8].setPath(scene.findPath(scene.getId(pathKeyPoints[9]),scene.getId(pathKeyPoints[0])));
+persons[9].setPath(scene.findPath(scene.getId(pathKeyPoints[6]),scene.getId(pathKeyPoints[0])));
+// persons[10].setPath(findShortestPath(pathGraph,pathKeyPoints[4],pathKeyPoints[0]));
+// persons[11].setPath(findShortestPath(pathGraph,pathKeyPoints[2],pathKeyPoints[0]));
+// persons[12].setPath(findShortestPath(pathGraph,pathKeyPoints[10],pathKeyPoints[0]));
+// persons[13].setPath(findShortestPath(pathGraph,pathKeyPoints[8],pathKeyPoints[0]));
+// persons[14].setPath(findShortestPath(pathGraph,pathKeyPoints[7],pathKeyPoints[0]));
+// persons[15].setPath(findShortestPath(pathGraph,pathKeyPoints[3],pathKeyPoints[0]));
+//
+// persons[16].setPath(findShortestPath(pathGraph,pathKeyPoints[4],pathKeyPoints[0]));
+// persons[17].setPath(findShortestPath(pathGraph,pathKeyPoints[6],pathKeyPoints[0]));
+// persons[18].setPath(findShortestPath(pathGraph,pathKeyPoints[6],pathKeyPoints[0]));
+//
+// persons[19].setPath(findShortestPath(pathGraph,pathKeyPoints[16],pathKeyPoints[0]));
+// persons[20].setPath(findShortestPath(pathGraph,pathKeyPoints[16],pathKeyPoints[0]));
+// persons[21].setPath(findShortestPath(pathGraph,pathKeyPoints[16],pathKeyPoints[0]));
+//
+// persons[22].setPath(findShortestPath(pathGraph,pathKeyPoints[15],pathKeyPoints[0]));
+// persons[23].setPath(findShortestPath(pathGraph,pathKeyPoints[15],pathKeyPoints[0]));
+// persons[24].setPath(findShortestPath(pathGraph,pathKeyPoints[15],pathKeyPoints[0]));
+//
+// persons[25].setPath(findShortestPath(pathGraph,pathKeyPoints[13],pathKeyPoints[0]));
+// persons[26].setPath(findShortestPath(pathGraph,pathKeyPoints[13],pathKeyPoints[0]));
+// persons[27].setPath(findShortestPath(pathGraph,pathKeyPoints[13],pathKeyPoints[0]));
+//
+// persons[28].setPath(findShortestPath(pathGraph,pathKeyPoints[9],pathKeyPoints[0]));
+// persons[29].setPath(findShortestPath(pathGraph,pathKeyPoints[9],pathKeyPoints[0]));
+// persons[30].setPath(findShortestPath(pathGraph,pathKeyPoints[10],pathKeyPoints[0]));
+// persons[31].setPath(findShortestPath(pathGraph,pathKeyPoints[10],pathKeyPoints[0]));
+// persons[32].setPath(findShortestPath(pathGraph,pathKeyPoints[10],pathKeyPoints[0]));
+//
+// persons[33].setPath(findShortestPath(pathGraph,pathKeyPoints[7],pathKeyPoints[0]));
+// persons[34].setPath(findShortestPath(pathGraph,pathKeyPoints[7],pathKeyPoints[0]));
+// persons[35].setPath(findShortestPath(pathGraph,pathKeyPoints[7],pathKeyPoints[0]));
