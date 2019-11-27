@@ -33,12 +33,11 @@ var func = function(v1,v2,hotArea){
 
 
 function test(){
-
-
   // pathGraph.onEdgeDisabled(func);
   //
   persons.forEach(function(person){
     person.addTo(map);
+    person.redirect(scene);
   });
 
   // console.log(pathGraph.calcPersonNumOfVertex(persons,pathKeyPoints[0]));

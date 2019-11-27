@@ -5,6 +5,44 @@ function LatLng(lat,lng){
 LatLng.prototype.toString = function(){
   return this.Lat + " , " + this.Lng;
 }
+LatLng.prototype.add = function(p1,p2){
+  if(p2 !== undefined){
+    this.Lat += p1;
+    this.Lng += p2;
+  }else {
+    this.Lat += p1;
+    this.Lng += p1;
+  }
+}
+LatLng.prototype.subtract = function(p1,p2){
+  if(p2 !== undefined){
+    this.Lat -= p1;
+    this.Lng -= p2;
+  }else {
+    this.Lat -= p1;
+    this.Lng -= p1;
+  }
+}
+LatLng.prototype.multiplyBy = function(p1,p2){
+  if(p2 !== undefined){
+    this.Lat *= p1;
+    this.Lng *= p2;
+  }else {
+    this.Lat *= p1;
+    this.Lng *= p1;
+  }
+}
+LatLng.prototype.divideBy = function(p1,p2){
+  if(p2 !== undefined){
+    this.Lat /= p1;
+    this.Lng /= p2;
+  }else {
+    this.Lat /= p1;
+    this.Lng /= p1;
+  }
+}
+
+
 
 // TODO:
 // Problem: Different CRS projection will affect what a circle or polygon looks like
@@ -247,12 +285,22 @@ class Scene{
       }
     }
 
-    var pathLatLng = [];
+    var pathLeafletPoint = [];
+    var lastPathPoint = path.length > 0? path[path.length - 1]:undefined;
+    let weights = 0;
     for(var i = path.length - 1; i>=0;i--){
-      pathLatLng.push(LatLng2leafletPoint(this.getPosition(path[i])));
+      pathLeafletPoint.push(LatLng2leafletPoint(this.getPosition(path[i])));
+
+      if(lastPathPoint !== path[i]){
+        weights += this.getWeight(lastPathPoint,path[i]);
+        lastPathPoint = path[i];
+      }
     }
 
-    return pathLatLng;
+    return {
+      Path:pathLeafletPoint,
+      Weights:weights
+    };
   }
 
   logNeighbors(id){

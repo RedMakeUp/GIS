@@ -13,6 +13,9 @@ class PriorityQueue {
     this._heap = [];
     this._comparator = comparator;
   }
+  clear(){
+    while(!this.isEmpty()) this.pop();
+  }
   size() {
     return this._heap.length;
   }
@@ -78,13 +81,14 @@ var PERSON_MOVE_TORANCE = 0.005;
 var PERSON_MOVE_SPEED = 0.005;
 var COORDINATE_ORIGIN = L.point(0,0);
 class Person{
-  constructor(location, style){
+  constructor(location){
     this.location =  location;
     this.path = [];
-    this.presentation = L.marker([location.x,location.y],style);
+    this.presentation = L.marker([location.x,location.y]);
     this.presentation.bindPopup(location.toString());
     this.lastTarget = null;
-    this.currentExit = 0;
+    this.currentExit = scene.getId(pathKeyPoints[0]);// By default
+    this.priorityQueue = new PriorityQueue((a, b) => a[1] < b[1]);
   }
 
   addTo(map){
@@ -118,6 +122,7 @@ class Person{
   }
 
   setPath(path){
+    console.log("Path: " + path);
     this.path = path;
     this.lastTarget = path[0];
   }
@@ -156,44 +161,67 @@ class Person{
     return isMarkerInsidePolygon(this.location,area);
   }
 
-  findCloestKeyPoint(graph){
-    var target = pathKeyPoints[0];
+  // Find the closet point to current position
+  //
+  // @points Should be an array of LatLng
+  findCloestKeyPoint(points){
+    var target = LatLng2leafletPoint(points[0]);
     var minDistance = this.location.distanceTo(target);
-    for(var p of pathKeyPoints){
-      var d = this.location.distanceTo(p);
+    for(var p of points){
+      var pt = LatLng2leafletPoint(p);
+      var d = this.location.distanceTo(pt);
 
       if(d < minDistance){
         minDistance = d;
-        target = p;
+        target = pt;
       }
     }
 
-    return target;
+    return leafletPoint2LatLng(target);
   }
 
-  // TODO
+  // Find a path to certain exit which has the minimun weigts
   redirect(scene){
-    var allExits = scene.getExitIds();
-
-    for(var i = 0; i < allExits.length; i++){
-      if(allExits[i] !== this.currentExit){
-
-      }
+    // New start node
+    var startPoint;
+    if(this.path.length > 0 && (this.lastTarget !== undefined || this.lastTarget !== null)){
+      // Check if this.lastTarget is valid
+      startPoint = this.findCloestKeyPoint([
+        leafletPoint2LatLng(this.path[0]),
+        leafletPoint2LatLng(this.lastTarget)
+      ]);
+    }else{
+      startPoint = this.findCloestKeyPoint(pathKeyPoints);
     }
+
+    // Find an exit
+    this.priorityQueue.clear();
+    var allExits = scene.getExitIds();
+    var pathPair;
+    for(var i = 0; i < allExits.length; i++){
+      pathPair = scene.findPath(scene.getId(startPoint),allExits[i]);
+      this.priorityQueue.push([pathPair.Path,pathPair.Weights]);
+    }
+
+    // set the path which has the minimun weigts to the move path of the person
+    var chosenPath = this.priorityQueue.pop()[0];
+    this.setPath(chosenPath);
   }
 
   // Update person location, say, per second
-  // Use elementInUI to show state of the person in ui
   move(scene){
     if(this.path.length === 0) return;
 
     var target = this.path[0];
     var dir = target.subtract(this.location);
     var d = dir.distanceTo(COORDINATE_ORIGIN);
-    dir.x /= d;
-    dir.y /= d;
-    this.location.x += (dir.x * PERSON_MOVE_SPEED);
-    this.location.y += (dir.y * PERSON_MOVE_SPEED);
+    if(d > 0){
+      dir.x /= d;
+      dir.y /= d;
+      this.location.x += (dir.x * PERSON_MOVE_SPEED);
+      this.location.y += (dir.y * PERSON_MOVE_SPEED);
+    }
+
 
     if(target.distanceTo(this.location) < PERSON_MOVE_TORANCE){
       if(this.path.length >= 2){
@@ -204,7 +232,9 @@ class Person{
       this.path.shift();
     }
 
-    if(this.presentation instanceof L.Marker)
+    if(this.presentation instanceof L.Marker){
       this.presentation.setLatLng({lat:this.location.x,lng:this.location.y});
+    }
+
   }
 }
