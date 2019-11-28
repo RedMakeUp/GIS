@@ -33,14 +33,21 @@ var func = function(v1,v2,hotArea){
 
 
 function test(){
+  Scene.prototype.onEdgeOnOffChanged = function(){
+    persons.forEach(function(person){
+      //person.redirect(scene);
+    });
+  }
+
+  console.log("Whole Person Num: " + scene.wholePersonNum);
+  console.log("Whole Edge Length: " + scene.wholeEdgeLength);
+
   // pathGraph.onEdgeDisabled(func);
   //
   persons.forEach(function(person){
     person.addTo(map);
     person.redirect(scene);
   });
-
-  // console.log(pathGraph.calcPersonNumOfVertex(persons,pathKeyPoints[0]));
 
   setInterval("movePerson()",200);
 }
@@ -55,7 +62,7 @@ function movePerson() {
 // ********************************************************
 
 var mapClick = function(e){
-
+  //console.log(e);
 }
 
 // Called at the page's initialization

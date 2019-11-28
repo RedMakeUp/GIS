@@ -49,6 +49,9 @@ LatLng.prototype.divideBy = function(p1,p2){
 class Scene{
   constructor(){
     this.MAX_NODE_NUM = 30;
+    this.MAX_PERSON_NUM_PER_EDGE_BY_DEFAULT = 3;
+    this.wholeEdgeLength = 0;
+    this.wholePersonNum = 0;
     this.nodes = new Map();
     this.neighbors = new Map();
     this.edges = new Map();
@@ -137,12 +140,13 @@ class Scene{
   // Also this will set the neighbor relation
   // An edge is represented as
   //    id1 | id2 -> {Enable:true, Weight: weight, Polyline: polyline}
-  addEdge(id1,id2){
+  addEdge(id1,id2,maxPersonNum){
     var pos1 = this.getPosition(id1);
     var pos2 = this.getPosition(id2);
     // Check the two ids do exist
     if(pos1 !== undefined && pos2 !== undefined){
-      var weight = calcDistance(pos1, pos2);
+      var distance = calcDistance(pos1, pos2);
+      this.wholeEdgeLength += distance;
       var polyline = L.polyline([LatLng2Array(pos1),LatLng2Array(pos2)], this.normalEdgeStyle);
       var hotArea = createRect(LatLng2leafletPoint(pos1),LatLng2leafletPoint(pos2)).setStyle(this.hotAreaStyle);
 
@@ -150,33 +154,60 @@ class Scene{
       this.neighbors.get(id2).add(id1);
       this.edges.set(
         id1 | id2,
-        {Enable:true, Weight:weight, Polyline:polyline, HotArea:hotArea, PersonNum: 0}
+        {
+          Enable:true,
+          Distance:distance,
+          Polyline:polyline,
+          HotArea:hotArea,
+          PersonSet: new Set(),
+          MaxPersonNum:(maxPersonNum === undefined?this.MAX_PERSON_NUM_PER_EDGE_BY_DEFAULT:maxPersonNum)
+        }
       );
     }
   }
 
+  // TODO: Check
+  findEdgeContainLatLng(v){
+    var edge = [];
+    var that = this;
+    this.edges.forEach(function(value,key){
+      if(isMarkerInsidePolygon(v,value.HotArea)){
+        return [
+          that.getId(createLatLng(value.Polyline.getLatLngs()[0].lat,value.Polyline.getLatLngs()[0].lng)),
+          that.getId(createLatLng(value.Polyline.getLatLngs()[1].lat,value.Polyline.getLatLngs()[1].lng))
+        ];
+      }
+    });
+
+    return edge
+  }
+
   // Get the weight between two nodes
   getWeight(id1,id2){
-    return this.edges.get(id1 | id2).Weight;
+    // var weight =
+    //   this.edges.get(id1 | id2).Distance / this.wholeEdgeLength +
+    //   this.edges.get(id1 | id2).PersonNum / this.wholePersonNum;
+    var weight = this.edges.get(id1 | id2).Distance;
+    return weight;
   }
 
   // There is one person who has entered this edge
-  enterEdge(id1,id2){
+  enterEdge(id1,id2, person){
     if(this.edges.get(id1 | id2) !== null && this.edges.get(id1 | id2) !== undefined){
-      this.edges.get(id1 | id2).PersonNum++;
+      this.edges.get(id1 | id2).PersonSet.add(person);
 
-      if(this.edges.get(id1 | id2).PersonNum > 3){
+      if(this.edges.get(id1 | id2).PersonSet.size > this.edges.get(id1 | id2).MaxPersonNum){
         this.disableEdge(id1,id2);
       }
     }
   }
 
   // There is one person who has exited this edge
-  exitEdge(id1,id2){
+  exitEdge(id1,id2,person){
     if(this.edges.get(id1 | id2) !== null && this.edges.get(id1 | id2) !== undefined){
-      this.edges.get(id1 | id2).PersonNum--;
+      this.edges.get(id1 | id2).PersonSet.delete(person);
 
-      if(this.edges.get(id1 | id2).PersonNum <= 3){
+      if(this.edges.get(id1 | id2).PersonSet.size <= this.edges.get(id1 | id2).MaxPersonNum){
         this.enableEdge(id1,id2);
       }
     }
@@ -190,6 +221,7 @@ class Scene{
     if(pos1 !== undefined && pos2 !== undefined){
       this.neighbors.get(id1).delete(id2);
       this.neighbors.get(id2).delete(id1);
+      this.wholeEdgeLength -= this.edges.get(id1 | id2).Distance;
       this.edges.delete(id1 | id2);
     }
   }
@@ -206,6 +238,7 @@ class Scene{
       this.neighbors.get(id2).delete(id1);
       this.edges.get(id1 | id2).Enable = false;
       this.edges.get(id1 | id2).Polyline.setStyle({color: '#f00'});
+      if(this.onEdgeOnOffChanged !== undefined) this.onEdgeOnOffChanged();
     }
   }
 
@@ -220,6 +253,8 @@ class Scene{
       this.neighbors.get(id2).add(id1);
       this.edges.get(id1 | id2).Enable = true;
       this.edges.get(id1 | id2).Polyline.setStyle(this.normalEdgeStyle);
+
+      if(this.onEdgeOnOffChanged !== undefined) this.onEdgeOnOffChanged();
     }
   }
 
@@ -227,6 +262,9 @@ class Scene{
     var that = this;
     this.edges.forEach(function(value,key){
       value.Polyline.addTo(map);
+    });
+    this.edges.forEach(function(value,key){
+      value.HotArea.addTo(map);
     });
     this.nodes.forEach(function(value,key){
       value.Circle.addTo(map);
@@ -244,7 +282,7 @@ class Scene{
   addClickOnEdge(){
     this.edges.forEach(function(value,key){
       value.Polyline.on("click",function(){
-        console.log(value.PersonNum);
+        console.log(value.PersonSet);
       });
     });
   }

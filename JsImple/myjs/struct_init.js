@@ -89,6 +89,7 @@ class Person{
     this.lastTarget = null;
     this.currentExit = scene.getId(pathKeyPoints[0]);// By default
     this.priorityQueue = new PriorityQueue((a, b) => a[1] < b[1]);
+    this.lastEnterEdge = [];
   }
 
   addTo(map){
@@ -121,10 +122,16 @@ class Person{
     }
   }
 
-  setPath(path){
-    console.log("Path: " + path);
+  // TODO: Check
+  setPath(path,scene){
+    if(path.length === 0) return;
+
     this.path = path;
-    this.lastTarget = path[0];
+    console.log(scene.findEdgeContainLatLng(this.location));
+    var id1 = scene.getId(leafletPoint2LatLng(this.location));
+    var id2 = scene.getId(leafletPoint2LatLng(this.path[0]));
+    scene.enterEdge(id1,id2,this);
+    this.lastEnterEdge = [id1,id2];
   }
 
   updatePath(relayPoint, newPath){
@@ -180,11 +187,12 @@ class Person{
     return leafletPoint2LatLng(target);
   }
 
+  // TODO: Check 
   // Find a path to certain exit which has the minimun weigts
   redirect(scene){
     // New start node
     var startPoint;
-    if(this.path.length > 0 && (this.lastTarget !== undefined || this.lastTarget !== null)){
+    if(this.path.length > 0 && (this.lastTarget !== undefined && this.lastTarget !== null)){
       // Check if this.lastTarget is valid
       startPoint = this.findCloestKeyPoint([
         leafletPoint2LatLng(this.path[0]),
@@ -205,7 +213,7 @@ class Person{
 
     // set the path which has the minimun weigts to the move path of the person
     var chosenPath = this.priorityQueue.pop()[0];
-    this.setPath(chosenPath);
+    this.setPath(chosenPath,scene);
   }
 
   // Update person location, say, per second
@@ -225,11 +233,14 @@ class Person{
 
     if(target.distanceTo(this.location) < PERSON_MOVE_TORANCE){
       if(this.path.length >= 2){
-        scene.exitEdge(scene.getId(leafletPoint2LatLng(this.lastTarget)),scene.getId(leafletPoint2LatLng(target)));
-        scene.enterEdge(scene.getId(leafletPoint2LatLng(target)),scene.getId(leafletPoint2LatLng(this.path[1])));
-        this.lastTarget = target;
+        scene.exitEdge(this.lastEnterEdge[0],this.lastEnterEdge[1],this);
+        var id1 = scene.getId(leafletPoint2LatLng(target));
+        var id2 = scene.getId(leafletPoint2LatLng(this.path[1]));
+        scene.enterEdge(id1,id2,this);
+        this.lastEnterEdge = [id1,id2];
       }
       this.path.shift();
+      this.lastTarget = target;
     }
 
     if(this.presentation instanceof L.Marker){
