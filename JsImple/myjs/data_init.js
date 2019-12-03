@@ -127,64 +127,64 @@ scene.addExit(scene.getId(pathKeyPoints[25]));
   scene.addEdge(scene.getId(pathKeyPoints[22]), scene.getId(pathKeyPoints[0]));
 }
 
-// var persons =[
-//   new Person(L.point(39.85,116.30)),
-//   new Person(L.point(39.88,116.32)),
-//   new Person(L.point(39.94,116.39)),
-//   new Person(L.point(39.92,116.27)),
-//   new Person(L.point(39.80,116.61)),
-//   new Person(L.point(39.85,116.48))
-// ];
-
-var persons = [
-
-  new Person(L.point(40.02025,116.63154)),//11
-  new Person(L.point(39.97027,116.46070)),//13
-  new Person(L.point(39.94027,116.40070)),//14
-  new Person(L.point(39.94027,116.34070)),//16
-  new Person(L.point(39.92027,116.27070)),//18
-
-
-	new Person(L.point(39.98027,116.35070)),//15
-	new Person(L.point(39.98027,116.25070)),//19
-	new Person(L.point(39.90027,116.19070)),//21
-
-  new Person(L.point(39.85175,116.48254)),//9
-  new Person(L.point(39.85175,116.37254)),//6
-  new Person(L.point(39.85175,116.29254)),//4
-  new Person(L.point(39.85175,116.23254)),//2
-
-  new Person(L.point(39.80175,116.60254)),//10
-  new Person(L.point(39.80175,116.42254)),//8
-  new Person(L.point(39.80175,116.37254)),//7
-  new Person(L.point(39.77175,116.25254)),//3
-  //library
-  new Person(L.point(39.85175,116.33254)),//4.1
-  new Person(L.point(39.86175,116.34254)),//6.1
-  new Person(L.point(39.84175,116.35254)),//6.2
-  //dorm room1
-  new Person(L.point(39.95175,116.33254)),//16.1
-  new Person(L.point(39.9575,116.34254)),//16.2
-  new Person(L.point(39.95175,116.32254)),//16.3
-  //dorm room2
-  new Person(L.point(39.99175,116.36254)),//15.1
-  new Person(L.point(39.99175,116.374254)),//15.2
-  new Person(L.point(39.98175,116.38254)),//15.3
-  //dorm room3
-  new Person(L.point(39.99175,116.47254)),//13.1
-  new Person(L.point(39.99175,116.464254)),//13.2
-  new Person(L.point(40.01175,116.47254)),//13.3
-  //playground
-  new Person(L.point(39.86175,116.552354)),//9.1
-  new Person(L.point(39.85175,116.534254)),//9.2
-  new Person(L.point(39.83175,116.59254)),//10.1
-  new Person(L.point(39.82175,116.58254)),//10.2
-  new Person(L.point(39.82175,116.60254)),//10.3
-  //Basketball court
-  new Person(L.point(39.80175,116.38254)),//7.1
-  new Person(L.point(39.78175,116.394254)),//7.2
-  new Person(L.point(39.79175,116.38254)),//7.3
+var persons =[
+  new Person(L.point(39.87338459498892,116.2511444091797)),
+  new Person(L.point(39.88,116.32)),
+  new Person(L.point(39.94,116.39)),
+  new Person(L.point(39.92,116.27)),
+  new Person(L.point(39.80,116.61)),
+  new Person(L.point(39.85,116.48))
 ];
+
+// var persons = [
+//
+//   new Person(L.point(40.02025,116.63154)),//11
+//   new Person(L.point(39.97027,116.46070)),//13
+//   new Person(L.point(39.94027,116.40070)),//14
+//   new Person(L.point(39.94027,116.34070)),//16
+//   new Person(L.point(39.92027,116.27070)),//18
+//
+//
+// 	new Person(L.point(39.98027,116.35070)),//15
+// 	new Person(L.point(39.98027,116.25070)),//19
+// 	new Person(L.point(39.90027,116.19070)),//21
+//
+//   new Person(L.point(39.85175,116.48254)),//9
+//   new Person(L.point(39.85175,116.37254)),//6
+//   new Person(L.point(39.85175,116.29254)),//4
+//   new Person(L.point(39.85175,116.23254)),//2
+//
+//   new Person(L.point(39.80175,116.60254)),//10
+//   new Person(L.point(39.80175,116.42254)),//8
+//   new Person(L.point(39.80175,116.37254)),//7
+//   new Person(L.point(39.77175,116.25254)),//3
+//   //library
+//   new Person(L.point(39.85175,116.33254)),//4.1
+//   new Person(L.point(39.86175,116.34254)),//6.1
+//   new Person(L.point(39.84175,116.35254)),//6.2
+//   //dorm room1
+//   new Person(L.point(39.95175,116.33254)),//16.1
+//   new Person(L.point(39.9575,116.34254)),//16.2
+//   new Person(L.point(39.95175,116.32254)),//16.3
+//   //dorm room2
+//   new Person(L.point(39.99175,116.36254)),//15.1
+//   new Person(L.point(39.99175,116.374254)),//15.2
+//   new Person(L.point(39.98175,116.38254)),//15.3
+//   //dorm room3
+//   new Person(L.point(39.99175,116.47254)),//13.1
+//   new Person(L.point(39.99175,116.464254)),//13.2
+//   new Person(L.point(40.01175,116.47254)),//13.3
+//   //playground
+//   new Person(L.point(39.86175,116.552354)),//9.1
+//   new Person(L.point(39.85175,116.534254)),//9.2
+//   new Person(L.point(39.83175,116.59254)),//10.1
+//   new Person(L.point(39.82175,116.58254)),//10.2
+//   new Person(L.point(39.82175,116.60254)),//10.3
+//   //Basketball court
+//   new Person(L.point(39.80175,116.38254)),//7.1
+//   new Person(L.point(39.78175,116.394254)),//7.2
+//   new Person(L.point(39.79175,116.38254)),//7.3
+// ];
 
 // persons[0].setPath(scene.findPath(scene.getId(pathKeyPoints[11]),scene.getId(pathKeyPoints[0])));
 // persons[1].setPath(scene.findPath(scene.getId(pathKeyPoints[13]),scene.getId(pathKeyPoints[0])));

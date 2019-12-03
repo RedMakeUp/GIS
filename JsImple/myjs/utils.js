@@ -24,7 +24,7 @@ var randomPointInPoly = function(polygon) {
 // v1 is the middle-left point of the rectangle
 // v2 is the middle-right point of the rectangle
 // w is its height
-function createRect(v1,v2, w = 0.01){
+function createRect(v1,v2, w = 0.0048){
   const R = L.point(1,0);
   const U = L.point(0,1);
   const Origin = L.point(0,0);
@@ -99,6 +99,10 @@ function LatLng2leafletPoint(v){
 
 function LatLng2Array(v){
   return [v.Lat, v.Lng];
+}
+
+function leafletPointEqual(v1,v2){
+  return v1.x === v2.x && v1.y === v2.y;
 }
 
 function createLatLng(lat, lng){

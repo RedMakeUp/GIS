@@ -172,22 +172,36 @@ class Scene{
     var that = this;
     this.edges.forEach(function(value,key){
       if(isMarkerInsidePolygon(v,value.HotArea)){
-        return [
-          that.getId(createLatLng(value.Polyline.getLatLngs()[0].lat,value.Polyline.getLatLngs()[0].lng)),
-          that.getId(createLatLng(value.Polyline.getLatLngs()[1].lat,value.Polyline.getLatLngs()[1].lng))
-        ];
+        var firstPoint = value.Polyline.getLatLngs()[0];
+        var secondPoint = value.Polyline.getLatLngs()[1];
+
+        edge.push(that.getId(createLatLng(firstPoint.lat,firstPoint.lng)));
+        edge.push(that.getId(createLatLng(secondPoint.lat,secondPoint.lng)));
+
+        return;
       }
     });
 
-    return edge
+    return edge;
   }
 
   // Get the weight between two nodes
   getWeight(id1,id2){
-    // var weight =
-    //   this.edges.get(id1 | id2).Distance / this.wholeEdgeLength +
-    //   this.edges.get(id1 | id2).PersonNum / this.wholePersonNum;
-    var weight = this.edges.get(id1 | id2).Distance;
+    // The length of the edge specified by id1 and id2
+    // Note: This value is greater than 0
+    var distance = this.edges.get(id1 | id2).Distance;
+    // The number of perons on the edge currently
+    // Note: This value is an integer and can be 0, 1, 2, ... 
+    var personNum = this.edges.get(id1 | id2).PersonSet.size;
+    // Sum of whole edges' length
+    var wholeDistance = this.wholeEdgeLength;
+    // Number of persons on the whole map currently
+    var wholePersonNum = this.wholePersonNum;
+
+    var weight =
+      distance / wholeDistance +
+      personNum / wholePersonNum;
+
     return weight;
   }
 
@@ -263,9 +277,9 @@ class Scene{
     this.edges.forEach(function(value,key){
       value.Polyline.addTo(map);
     });
-    this.edges.forEach(function(value,key){
-      value.HotArea.addTo(map);
-    });
+    // this.edges.forEach(function(value,key){
+    //   value.HotArea.addTo(map);
+    // });
     this.nodes.forEach(function(value,key){
       value.Circle.addTo(map);
     });

@@ -78,15 +78,17 @@ class PriorityQueue {
 // Define: Person
 // *********************************************************************
 var PERSON_MOVE_TORANCE = 0.005;
-var PERSON_MOVE_SPEED = 0.005;
+var PERSON_MOVE_SPEED = 0.04;
 var COORDINATE_ORIGIN = L.point(0,0);
 class Person{
   constructor(location){
+    this.name = "Tom";
     this.location =  location;
     this.path = [];
     this.presentation = L.marker([location.x,location.y]);
     this.presentation.bindPopup(location.toString());
     this.lastTarget = null;
+    this.lastRemovedPathNode = null;
     this.currentExit = scene.getId(pathKeyPoints[0]);// By default
     this.priorityQueue = new PriorityQueue((a, b) => a[1] < b[1]);
     this.lastEnterEdge = [];
@@ -127,11 +129,13 @@ class Person{
     if(path.length === 0) return;
 
     this.path = path;
-    console.log(scene.findEdgeContainLatLng(this.location));
-    var id1 = scene.getId(leafletPoint2LatLng(this.location));
-    var id2 = scene.getId(leafletPoint2LatLng(this.path[0]));
-    scene.enterEdge(id1,id2,this);
-    this.lastEnterEdge = [id1,id2];
+
+    console.log(this.name + " has a new path: " + this.path);
+
+    //var currentEdge = scene.findEdgeContainLatLng(this.location);
+
+    //scene.enterEdge(currentEdge[0],currentEdge[1],this);
+    //this.lastEnterEdge = currentEdge;
   }
 
   updatePath(relayPoint, newPath){
@@ -187,7 +191,7 @@ class Person{
     return leafletPoint2LatLng(target);
   }
 
-  // TODO: Check 
+  // TODO: Check
   // Find a path to certain exit which has the minimun weigts
   redirect(scene){
     // New start node
@@ -216,7 +220,40 @@ class Person{
     this.setPath(chosenPath,scene);
   }
 
-  // Update person location, say, per second
+  moveTo({target,onReached}){
+    let lastTime = performance.now();
+    let that = this;
+    let dir = target.subtract(this.location);
+    let d = dir.distanceTo(COORDINATE_ORIGIN);
+    if(d > 0){
+      dir.x /= d;
+      dir.y /= d;
+    }else {
+      dir.x = 0;
+      dir.y = 0;
+    }
+
+    requestAnimationFrame(function animate(currentTime) {
+      let deltaTime = (currentTime - lastTime) * 0.001;
+      lastTime = currentTime;
+
+      that.location.x += (dir.x * PERSON_MOVE_SPEED * deltaTime);
+      that.location.y += (dir.y * PERSON_MOVE_SPEED * deltaTime);
+
+      if(that.presentation instanceof L.Marker){
+        that.presentation.setLatLng({lat:that.location.x,lng:that.location.y});
+      }
+
+      if(target.distanceTo(that.location) < PERSON_MOVE_TORANCE) {
+        onReached(that);
+      }else {
+        requestAnimationFrame(animate);
+      }
+
+    });
+  }
+
+  // TODO: Change to Point-to-Point movement
   move(scene){
     if(this.path.length === 0) return;
 
@@ -240,6 +277,14 @@ class Person{
         this.lastEnterEdge = [id1,id2];
       }
       this.path.shift();
+
+      console.log(this.name + " has arriven in " + target);
+
+      if(this.lastTarget !== null && !leafletPointEqual(this.lastTarget,target) ){
+          this.path = [];
+          this.redirect(scene);
+      }
+
       this.lastTarget = target;
     }
 

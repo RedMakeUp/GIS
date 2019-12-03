@@ -33,15 +33,6 @@ var func = function(v1,v2,hotArea){
 
 
 function test(){
-  Scene.prototype.onEdgeOnOffChanged = function(){
-    persons.forEach(function(person){
-      //person.redirect(scene);
-    });
-  }
-
-  console.log("Whole Person Num: " + scene.wholePersonNum);
-  console.log("Whole Edge Length: " + scene.wholeEdgeLength);
-
   // pathGraph.onEdgeDisabled(func);
   //
   persons.forEach(function(person){
@@ -49,7 +40,37 @@ function test(){
     person.redirect(scene);
   });
 
-  setInterval("movePerson()",200);
+  // TODO: EnterEdge and ExitEdge
+  var personReached = function(person){
+    console.log("Reached");
+
+    // if(person.path.length >= 2){
+    //   scene.exitEdge(person.lastEnterEdge[0],person.lastEnterEdge[1],this);
+    //   var id1 = scene.getId(leafletPoint2LatLng(target));
+    //   var id2 = scene.getId(leafletPoint2LatLng(person.path[1]));
+    //   scene.enterEdge(id1,id2,this);
+    //   this.lastEnterEdge = [id1,id2];
+    // }
+
+    person.path.shift();
+
+    if(person.path.length > 0){
+      person.moveTo({
+        target: person.path[0],
+        onReached: personReached
+      });
+    }
+  }
+
+  persons.forEach(function(person){
+    person.moveTo({
+      target: person.path[0],
+      onReached: personReached
+    });
+  });
+
+  // setInterval("movePerson()",200);
+
 }
 function movePerson() {
   persons.forEach(function(person){
@@ -62,7 +83,7 @@ function movePerson() {
 // ********************************************************
 
 var mapClick = function(e){
-  //console.log(e);
+  console.log(e);
 }
 
 // Called at the page's initialization
