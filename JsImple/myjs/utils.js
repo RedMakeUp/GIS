@@ -112,3 +112,7 @@ function createLatLng(lat, lng){
 function calcDistance(v1,v2){
   return LatLng2leafletPoint(v1).distanceTo(LatLng2leafletPoint(v2));
 }
+
+function verifyObject(o){
+  return o !== null && o !== undefined;
+}

@@ -49,7 +49,7 @@ LatLng.prototype.divideBy = function(p1,p2){
 class Scene{
   constructor(){
     this.MAX_NODE_NUM = 30;
-    this.MAX_PERSON_NUM_PER_EDGE_BY_DEFAULT = 3;
+    this.MAX_PERSON_NUM_PER_EDGE_BY_DEFAULT = 0;
     this.wholeEdgeLength = 0;
     this.wholePersonNum = 0;
     this.nodes = new Map();
@@ -166,7 +166,6 @@ class Scene{
     }
   }
 
-  // TODO: Check
   findEdgeContainLatLng(v){
     var edge = [];
     var that = this;
@@ -191,7 +190,7 @@ class Scene{
     // Note: This value is greater than 0
     var distance = this.edges.get(id1 | id2).Distance;
     // The number of perons on the edge currently
-    // Note: This value is an integer and can be 0, 1, 2, ... 
+    // Note: This value is an integer and can be 0, 1, 2, ...
     var personNum = this.edges.get(id1 | id2).PersonSet.size;
     // Sum of whole edges' length
     var wholeDistance = this.wholeEdgeLength;
@@ -199,8 +198,8 @@ class Scene{
     var wholePersonNum = this.wholePersonNum;
 
     var weight =
-      distance / wholeDistance +
-      personNum / wholePersonNum;
+      distance / wholeDistance * 0.7+
+      personNum / wholePersonNum * 0.3;
 
     return weight;
   }

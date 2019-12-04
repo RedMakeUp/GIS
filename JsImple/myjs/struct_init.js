@@ -124,36 +124,39 @@ class Person{
     }
   }
 
-  // TODO: Check
-  setPath(path,scene){
-    if(path.length === 0) return;
-
+  // Set a new path to the person
+  setPath(path){
     this.path = path;
 
     console.log(this.name + " has a new path: " + this.path);
-
-    //var currentEdge = scene.findEdgeContainLatLng(this.location);
-
-    //scene.enterEdge(currentEdge[0],currentEdge[1],this);
-    //this.lastEnterEdge = currentEdge;
   }
 
-  updatePath(relayPoint, newPath){
-    if(this.path.length === 0)
-      this.setPath(newPath);
-    else{
-      var index = this.path.indexOf(relayPoint);
-      if(index > -1){
-        index++;
-        var removedLen =  this.path.length - index;
-        if(removedLen > 0) this.path.splice(index, removedLen);
-        for(var i = 1;i<newPath.length;i++) this.path[index++] = newPath[i];
-      }else{
-        this.setPath(newPath);
-      }
+  // Move along with current path
+  run(scene){
+    var currentEdge = scene.findEdgeContainLatLng(this.location);
+    scene.enterEdge(currentEdge[0],currentEdge[1],this);
+    this.lastEnterEdge = currentEdge;
+
+    this.moveTo(this.path[0],scene);
+  }
+
+  // Called when the person reached a target
+  reachedOnTarget(target,scene){
+    console.log(this.name + " has Reached " + target);
+
+    scene.exitEdge(this.lastEnterEdge[0],this.lastEnterEdge[1],this);
+    if(this.path.length >= 2){
+      var id1 = scene.getId(leafletPoint2LatLng(target));
+      var id2 = scene.getId(leafletPoint2LatLng(this.path[1]));
+      scene.enterEdge(id1,id2,this);
+      this.lastEnterEdge = [id1,id2];
     }
 
-    if(this.path.length === 0) {this.path[0] = relayPoint;}
+    this.path.shift();
+
+    if(this.path.length > 0){
+      this.moveTo(this.path[0],scene);
+    }
   }
 
   get loc(){
@@ -191,8 +194,6 @@ class Person{
     return leafletPoint2LatLng(target);
   }
 
-  // TODO: Check
-  // Find a path to certain exit which has the minimun weigts
   redirect(scene){
     // New start node
     var startPoint;
@@ -220,7 +221,9 @@ class Person{
     this.setPath(chosenPath,scene);
   }
 
-  moveTo({target,onReached}){
+  moveTo(target,scene){
+    if(!verifyObject(target)) return;
+
     let lastTime = performance.now();
     let that = this;
     let dir = target.subtract(this.location);
@@ -245,7 +248,8 @@ class Person{
       }
 
       if(target.distanceTo(that.location) < PERSON_MOVE_TORANCE) {
-        onReached(that);
+        that.reachedOnTarget(target,scene);
+        // onReached(target,that);
       }else {
         requestAnimationFrame(animate);
       }
@@ -253,44 +257,4 @@ class Person{
     });
   }
 
-  // TODO: Change to Point-to-Point movement
-  move(scene){
-    if(this.path.length === 0) return;
-
-    var target = this.path[0];
-    var dir = target.subtract(this.location);
-    var d = dir.distanceTo(COORDINATE_ORIGIN);
-    if(d > 0){
-      dir.x /= d;
-      dir.y /= d;
-      this.location.x += (dir.x * PERSON_MOVE_SPEED);
-      this.location.y += (dir.y * PERSON_MOVE_SPEED);
-    }
-
-
-    if(target.distanceTo(this.location) < PERSON_MOVE_TORANCE){
-      if(this.path.length >= 2){
-        scene.exitEdge(this.lastEnterEdge[0],this.lastEnterEdge[1],this);
-        var id1 = scene.getId(leafletPoint2LatLng(target));
-        var id2 = scene.getId(leafletPoint2LatLng(this.path[1]));
-        scene.enterEdge(id1,id2,this);
-        this.lastEnterEdge = [id1,id2];
-      }
-      this.path.shift();
-
-      console.log(this.name + " has arriven in " + target);
-
-      if(this.lastTarget !== null && !leafletPointEqual(this.lastTarget,target) ){
-          this.path = [];
-          this.redirect(scene);
-      }
-
-      this.lastTarget = target;
-    }
-
-    if(this.presentation instanceof L.Marker){
-      this.presentation.setLatLng({lat:this.location.x,lng:this.location.y});
-    }
-
-  }
 }
