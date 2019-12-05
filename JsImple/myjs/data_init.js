@@ -127,14 +127,14 @@ scene.addExit(scene.getId(pathKeyPoints[25]));
   scene.addEdge(scene.getId(pathKeyPoints[22]), scene.getId(pathKeyPoints[0]));
 }
 
-var persons =[
-  // new Person(L.point(39.87338459498892,116.2511444091797)),
-  // new Person(L.point(39.88,116.32)),
-  // new Person(L.point(39.94,116.39)),
-  // new Person(L.point(39.92,116.27)),
-  // new Person(L.point(39.80,116.61)),
-  // new Person(L.point(39.85,116.48))
-];
+// var persons =[
+//   new Person(L.point(39.87338459498892,116.2511444091797)),
+//   new Person(L.point(39.88,116.32)),
+//   new Person(L.point(39.94,116.39)),
+//   new Person(L.point(39.92,116.27)),
+//   new Person(L.point(39.80,116.61)),
+//   new Person(L.point(39.85,116.48))
+// ];
 
 var persons = [
 

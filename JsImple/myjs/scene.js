@@ -247,8 +247,8 @@ class Scene{
     // Check the two ids do exist
     if(pos1 !== undefined && pos2 !== undefined&&
         this.edges.get(id1 | id2).Enable === true){
-      this.neighbors.get(id1).delete(id2);
-      this.neighbors.get(id2).delete(id1);
+      //this.neighbors.get(id1).delete(id2);
+      //this.neighbors.get(id2).delete(id1);
       this.edges.get(id1 | id2).Enable = false;
       this.edges.get(id1 | id2).Polyline.setStyle({color: '#f00'});
       if(this.onEdgeOnOffChanged !== undefined) this.onEdgeOnOffChanged();
@@ -262,8 +262,8 @@ class Scene{
     // Check the two ids do exist
     if(pos1 !== undefined && pos2 !== undefined &&
         this.edges.get(id1 | id2).Enable === false){
-      this.neighbors.get(id1).add(id2);
-      this.neighbors.get(id2).add(id1);
+      //this.neighbors.get(id1).add(id2);
+      //this.neighbors.get(id2).add(id1);
       this.edges.get(id1 | id2).Enable = true;
       this.edges.get(id1 | id2).Polyline.setStyle(this.normalEdgeStyle);
 

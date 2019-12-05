@@ -133,11 +133,25 @@ class Person{
 
   // Move along with current path
   run(scene){
-    var currentEdge = scene.findEdgeContainLatLng(this.location);
-    scene.enterEdge(currentEdge[0],currentEdge[1],this);
-    this.lastEnterEdge = currentEdge;
+    if(!verifyObject(this.path[0])) return;
 
-    this.moveTo(this.path[0],scene);
+    if(this.path[0].distanceTo(this.location) < PERSON_MOVE_TORANCE){
+      var currentEdge = [
+        scene.getId(leafletPoint2LatLng(this.path[0])),
+        scene.getId(leafletPoint2LatLng(this.path[1]))
+      ];
+      scene.enterEdge(currentEdge[0],currentEdge[1],this);
+      this.lastEnterEdge = currentEdge;
+
+      this.moveTo(this.path[1],scene);
+    }else{
+      var currentEdge = scene.findEdgeContainLatLng(this.location);
+      scene.enterEdge(currentEdge[0],currentEdge[1],this);
+      this.lastEnterEdge = currentEdge;
+
+      this.moveTo(this.path[0],scene);
+    }
+
   }
 
   // Called when the person reached a target
@@ -145,18 +159,20 @@ class Person{
     console.log(this.name + " has Reached " + target);
 
     scene.exitEdge(this.lastEnterEdge[0],this.lastEnterEdge[1],this);
-    if(this.path.length >= 2){
-      var id1 = scene.getId(leafletPoint2LatLng(target));
-      var id2 = scene.getId(leafletPoint2LatLng(this.path[1]));
-      scene.enterEdge(id1,id2,this);
-      this.lastEnterEdge = [id1,id2];
-    }
-
-    this.path.shift();
-
-    if(this.path.length > 0){
-      this.moveTo(this.path[0],scene);
-    }
+    this.redirect(scene);
+    this.run(scene);
+    // if(this.path.length >= 2){
+    //   var id1 = scene.getId(leafletPoint2LatLng(target));
+    //   var id2 = scene.getId(leafletPoint2LatLng(this.path[1]));
+    //   scene.enterEdge(id1,id2,this);
+    //   this.lastEnterEdge = [id1,id2];
+    // }
+    //
+    // this.path.shift();
+    //
+    // if(this.path.length > 0){
+    //   this.moveTo(this.path[0],scene);
+    // }
   }
 
   get loc(){
